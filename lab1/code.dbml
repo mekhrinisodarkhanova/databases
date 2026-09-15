@@ -1,0 +1,116 @@
+Table Airport {
+  airport_id int [pk]
+  airport_name varchar(100) [not null]
+  country varchar(100) [not null]
+  state varchar(100)
+  city varchar(100) [not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table Airline {
+  airline_id int [pk]
+  airline_code varchar(10) [not null, unique]
+  name varchar(100) [not null]
+  country varchar(100) [not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table Flight {
+  flight_id int [pk]
+  departing_gate varchar(20)
+  arriving_gate varchar(20)
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  airline_id int [not null]
+  departure_airport_id int [not null]
+  arrival_airport_id int [not null]
+  scheduled_departure_time datetime [not null]
+  scheduled_arrival_time datetime [not null]
+  actual_departure_time datetime
+  actual_arrival_time datetime
+}
+
+Table Passenger {
+  passenger_id int [pk]
+  first_name varchar(50) [not null]
+  last_name varchar(50) [not null]
+  gender varchar(20)
+  date_of_birth date
+  country_of_citizenship varchar(100)
+  country_of_residence varchar(100)
+  passport_number varchar(50) [not null, unique]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table Booking {
+  booking_id int [pk]
+  flight_id int [not null]
+  passenger_id int [not null]
+  status varchar(30) [not null]
+  booking_platform varchar(50)
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  ticket_price decimal(10,2) [not null]
+}
+
+Table BoardingPass {
+  boarding_pass_id int [pk]
+  seat varchar(10)
+  boarding_time datetime
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  booking_id int [not null, unique]
+}
+
+Table Baggage {
+  baggage_id int [pk]
+  weight_kg decimal(5,2) [not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  booking_id int [not null]
+}
+
+Table BaggageCheck {
+  baggage_check_id int [pk]
+  check_results varchar(100)
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  booking_id int [not null]
+  passenger_id int [not null]
+}
+
+Table SecurityCheck {
+  security_check_id int [pk]
+  check_results varchar(100)
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  passenger_id int [not null]
+}
+
+Table BookingChange {
+  booking_change_id int [pk]
+  booking_id int [not null]
+  change_description varchar(255)
+  created_at datetime [not null]
+}
+
+// 1. One-to-One 
+Ref: Booking.booking_id - BoardingPass.booking_id
+
+// 2. One-to-Many / Many-to-One 
+Ref: Airline.airline_id < Flight.airline_id
+Ref: Airport.airport_id < Flight.departure_airport_id
+Ref: Airport.airport_id < Flight.arrival_airport_id
+Ref: Passenger.passenger_id < Booking.passenger_id
+Ref: Flight.flight_id < Booking.flight_id
+Ref: Booking.booking_id < Baggage.booking_id
+Ref: Booking.booking_id < BaggageCheck.booking_id
+Ref: Passenger.passenger_id < BaggageCheck.passenger_id
+Ref: Passenger.passenger_id < SecurityCheck.passenger_id
+Ref: Booking.booking_id < BookingChange.booking_id
+
+// 3. Many-to-Many
+Ref: Passenger.passenger_id <> Flight.flight_id
